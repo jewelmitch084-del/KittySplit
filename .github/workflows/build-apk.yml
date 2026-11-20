@@ -37,9 +37,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Accept Android SDK Licenses
+      - name: Install Android SDK Packages & Accept Licenses
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" || true
 
       - name: Configure Capacitor & Android Project
         run: |
@@ -48,6 +49,7 @@ jobs:
             npx cap init "KittySplit" "com.kittysplit.app" --web-dir=dist
             npx cap add android
           fi
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
           npx cap sync android
 
       - name: Enable Camera & Storage Permissions
@@ -59,7 +61,7 @@ jobs:
 
       - name: Build Debug APK
         working-directory: android
-        run: chmod +x gradlew && ./gradlew assembleDebug
+        run: chmod +x gradlew && ./gradlew assembleDebug --stacktrace
 
       - name: Upload KittySplit APK
         uses: actions/upload-artifact@v4
