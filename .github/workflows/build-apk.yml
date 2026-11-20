@@ -1,0 +1,67 @@
+name: Build KittySplit Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build Vite web app
+        run: bun run build
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Configure Capacitor & Android Project
+        run: |
+          if [ ! -d "android" ]; then
+            bun add @capacitor/core @capacitor/cli @capacitor/android
+            npx cap init "KittySplit" "com.kittysplit.app" --web-dir=dist
+            npx cap add android
+          fi
+          npx cap sync android
+
+      - name: Enable Cleartext & Camera Permissions
+        run: |
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          if ! grep -q "android.permission.CAMERA" "$MANIFEST"; then
+            sed -i 's/<uses-permission android:name="android.permission.INTERNET" \/>/<uses-permission android:name="android.permission.INTERNET" \/>\n    <uses-permission android:name="android.permission.CAMERA" \/>\n    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" \/>/' "$MANIFEST"
+          fi
+
+      - name: Build Debug APK
+        working-directory: android
+        run: chmod +x gradlew && ./gradlew assembleDebug
+
+      - name: Upload KittySplit APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: KittySplit-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
