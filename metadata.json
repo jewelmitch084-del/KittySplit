@@ -1,0 +1,6 @@
+{
+  "name": "KittySplit — Receipt-to-Split",
+  "description": "Scan receipts with Gemini vision and split every item, tax, and tip with Hello Kitty & Friends kawaii characters.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

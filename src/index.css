@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: #FFFDFC;
+    color: #231B20;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Crisp serrated paper receipt top/bottom edges */
+.receipt-edge-top {
+  background-image: linear-gradient(135deg, #FFFFFF 50%, transparent 50%),
+    linear-gradient(225deg, #FFFFFF 50%, transparent 50%);
+  background-position: bottom left;
+  background-size: 14px 7px;
+  background-repeat: repeat-x;
+}
+
+.receipt-edge-bottom {
+  background-image: linear-gradient(315deg, #FFFFFF 50%, transparent 50%),
+    linear-gradient(45deg, #FFFFFF 50%, transparent 50%);
+  background-position: top left;
+  background-size: 14px 7px;
+  background-repeat: repeat-x;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
