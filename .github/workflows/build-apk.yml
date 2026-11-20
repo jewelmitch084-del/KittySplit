@@ -37,8 +37,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Configure Capacitor & Android Project
         run: |
@@ -49,7 +50,7 @@ jobs:
           fi
           npx cap sync android
 
-      - name: Enable Cleartext & Camera Permissions
+      - name: Enable Camera & Storage Permissions
         run: |
           MANIFEST="android/app/src/main/AndroidManifest.xml"
           if ! grep -q "android.permission.CAMERA" "$MANIFEST"; then
